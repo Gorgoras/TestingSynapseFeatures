@@ -1,0 +1,17 @@
+{
+	"name": "Read delta from t-sql",
+	"properties": {
+		"content": {
+			"query": "select top 10 * from \nOPENROWSET(\n    BULK 'https://gen2cluster.blob.core.windows.net/syn-analytics/saved_dataframe_delta',\n    FORMAT = 'DELTA'\n) as rows\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "master"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
