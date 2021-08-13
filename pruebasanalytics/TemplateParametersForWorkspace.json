@@ -8,14 +8,29 @@
 		"lake_gen2cluster_accountKey": {
 			"value": ""
 		},
+		"lake_gen2cluster_servPpal_servicePrincipalCredential": {
+			"value": ""
+		},
 		"pruebasanalytics-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
 		"sql_SourceDB_connectionString": {
 			"value": ""
 		},
+		"AKV_1_properties_typeProperties_baseUrl": {
+			"value": "https://chargecard764Id.vault.azure.net/"
+		},
 		"lake_gen2cluster_properties_typeProperties_url": {
 			"value": "https://gen2cluster.dfs.core.windows.net/"
+		},
+		"lake_gen2cluster_servPpal_properties_typeProperties_url": {
+			"value": "https://gen2cluster.dfs.core.windows.net"
+		},
+		"lake_gen2cluster_servPpal_properties_typeProperties_tenant": {
+			"value": "ca1d08b0-9543-4bd9-8718-42becddc7786"
+		},
+		"lake_gen2cluster_servPpal_properties_typeProperties_servicePrincipalId": {
+			"value": "92edc83e-82bc-46a3-ab79-2fc09b752cd0"
 		},
 		"pruebasanalytics-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://gen2cluster.dfs.core.windows.net"

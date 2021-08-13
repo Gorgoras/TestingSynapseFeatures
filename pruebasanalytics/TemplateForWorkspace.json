@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'lake_gen2cluster'"
 		},
+		"lake_gen2cluster_servPpal_servicePrincipalCredential": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalCredential' of 'lake_gen2cluster_servPpal'"
+		},
 		"pruebasanalytics-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'pruebasanalytics-WorkspaceDefaultSqlServer'"
@@ -19,9 +23,25 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'sql_SourceDB'"
 		},
+		"AKV_1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://chargecard764Id.vault.azure.net/"
+		},
 		"lake_gen2cluster_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://gen2cluster.dfs.core.windows.net/"
+		},
+		"lake_gen2cluster_servPpal_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://gen2cluster.dfs.core.windows.net"
+		},
+		"lake_gen2cluster_servPpal_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "ca1d08b0-9543-4bd9-8718-42becddc7786"
+		},
+		"lake_gen2cluster_servPpal_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "92edc83e-82bc-46a3-ab79-2fc09b752cd0"
 		},
 		"pruebasanalytics-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
@@ -32,6 +52,19 @@
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/AKV_1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AKV_1_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/lake_gen2cluster')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
@@ -44,6 +77,32 @@
 					"accountKey": {
 						"type": "SecureString",
 						"value": "[parameters('lake_gen2cluster_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/lake_gen2cluster_servPpal')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('lake_gen2cluster_servPpal_properties_typeProperties_url')]",
+					"tenant": "[parameters('lake_gen2cluster_servPpal_properties_typeProperties_tenant')]",
+					"servicePrincipalId": "[parameters('lake_gen2cluster_servPpal_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredentialType": "ServicePrincipalKey",
+					"servicePrincipalCredential": {
+						"type": "SecureString",
+						"value": "[parameters('lake_gen2cluster_servPpal_servicePrincipalCredential')]"
 					}
 				},
 				"connectVia": {
@@ -6214,16 +6273,12 @@
 						"sparkVersion": "2.4",
 						"nodeCount": 3,
 						"cores": 4,
-						"memory": 28,
-						"extraHeader": {},
-						"automaticScaleJobs": false
-					},
-					"sessionKeepAliveTimeout": 30
+						"memory": 28
+					}
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"import sys\n",
 							"from pyspark.sql import SparkSession\n",
@@ -6231,20 +6286,95 @@
 							"sc = SparkSession.builder.getOrCreate()\n",
 							"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\n",
 							"\n",
-							"connection_string = token_library.getSecret(\"<AZURE KEY VAULT NAME>\", \"<SECRET KEY>\", \"<LINKED SERVICE NAME>\")\n",
+							"connection_string = token_library.getSecret(\"chargecard764Id\", \"sourcedb-jdbc-conStr\")\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 10
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"print(connection_string)"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"tablaUnificado = spark.read.format('jdbc') \\\n",
+							".option('url', connection_string) \\\n",
+							".option('dbtable', 'Unificado') \\\n",
+							".option('driver', 'com.microsoft.sqlserver.jdbc.SQLServerDriver') \\\n",
+							".load()"
+						],
+						"outputs": [],
+						"execution_count": 21
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"CHROM"
+									],
+									"values": [
+										"FECHA_COPIA"
+									],
+									"yLabel": "FECHA_COPIA",
+									"xLabel": "CHROM",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"FECHA_COPIA\":{\"CHR1\":0,\"CHR10\":0,\"CHR11\":0,\"CHR12\":0,\"CHR13\":0,\"CHR14\":0,\"CHR15\":0,\"CHR16\":0,\"CHR17\":0,\"CHR18\":0,\"CHR19\":0,\"CHR2\":0,\"CHR20\":0,\"CHR3\":0,\"CHR4\":0,\"CHR5\":0,\"CHR6\":0,\"CHR7\":0,\"CHR8\":0,\"CHR9\":0}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"tablaUnificado_1 = spark.read.jdbc(url=connection_string, table='Unificado')"
+						],
+						"outputs": [],
+						"execution_count": 23
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"CHROM"
+									],
+									"values": [
+										"FECHA_COPIA"
+									],
+									"yLabel": "FECHA_COPIA",
+									"xLabel": "CHROM",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"FECHA_COPIA\":{\"CHR1\":0,\"CHR10\":0,\"CHR11\":0,\"CHR12\":0,\"CHR13\":0,\"CHR14\":0,\"CHR15\":0,\"CHR16\":0,\"CHR17\":0,\"CHR18\":0,\"CHR19\":0,\"CHR2\":0,\"CHR20\":0,\"CHR3\":0,\"CHR4\":0,\"CHR5\":0,\"CHR6\":0,\"CHR7\":0,\"CHR8\":0,\"CHR9\":0}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"display(tablaUnificado_1)"
+						],
+						"outputs": [],
+						"execution_count": 24
 					}
 				]
 			},
@@ -6290,33 +6420,50 @@
 						"sparkVersion": "2.4",
 						"nodeCount": 3,
 						"cores": 4,
-						"memory": 28
-					}
+						"memory": 28,
+						"extraHeader": {},
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"%%pyspark\n",
 							"# retrieve connectionstring from TokenLibrary\n",
 							"\n",
 							"from pyspark.sql import SparkSession\n",
 							"\n",
-							"sc = SparkSession.builder.getOrCreate()\n",
+							"sc_key = SparkSession.builder.getOrCreate()\n",
 							"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\n",
-							"connection_string = token_library.getConnectionString(\"<LINKED SERVICE NAME>\")\n",
-							""
+							"connection_string_Key = token_library.getConnectionString(\"lake_gen2cluster\")\n",
+							"\n",
+							"sc_servPpal = SparkSession.builder.getOrCreate()\n",
+							"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\n",
+							"connection_string_SP = token_library.getConnectionString(\"lake_gen2cluster_servPpal\")"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 8
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
-							"print(connection_string)"
+							"print(connection_string_Key)"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"print(connection_string_SP)"
+						],
+						"outputs": [],
+						"execution_count": 9
 					}
 				]
 			},
