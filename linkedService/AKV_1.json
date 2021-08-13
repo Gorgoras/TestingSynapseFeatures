@@ -1,0 +1,10 @@
+{
+	"name": "AKV_1",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://chargecard764Id.vault.azure.net/"
+		}
+	}
+}
