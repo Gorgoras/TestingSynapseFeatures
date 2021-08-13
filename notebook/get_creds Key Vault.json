@@ -51,17 +51,90 @@
 					"sc = SparkSession.builder.getOrCreate()\n",
 					"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\n",
 					"\n",
-					"connection_string = token_library.getSecret(\"<AZURE KEY VAULT NAME>\", \"<SECRET KEY>\", \"<LINKED SERVICE NAME>\")\n",
+					"connection_string = token_library.getSecret(\"chargecard764Id\", \"sourcedb-jdbc-conStr\")\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"print(connection_string)"
 				],
-				"execution_count": null
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"tablaUnificado = spark.read.format('jdbc') \\\n",
+					".option('url', connection_string) \\\n",
+					".option('dbtable', 'Unificado') \\\n",
+					".option('driver', 'com.microsoft.sqlserver.jdbc.SQLServerDriver') \\\n",
+					".load()"
+				],
+				"execution_count": 21
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"diagram": {
+						"activateDiagramType": 1,
+						"chartConfig": {
+							"category": "bar",
+							"keys": [
+								"CHROM"
+							],
+							"values": [
+								"FECHA_COPIA"
+							],
+							"yLabel": "FECHA_COPIA",
+							"xLabel": "CHROM",
+							"aggregation": "SUM",
+							"aggByBackend": false
+						},
+						"aggData": "{\"FECHA_COPIA\":{\"CHR1\":0,\"CHR10\":0,\"CHR11\":0,\"CHR12\":0,\"CHR13\":0,\"CHR14\":0,\"CHR15\":0,\"CHR16\":0,\"CHR17\":0,\"CHR18\":0,\"CHR19\":0,\"CHR2\":0,\"CHR20\":0,\"CHR3\":0,\"CHR4\":0,\"CHR5\":0,\"CHR6\":0,\"CHR7\":0,\"CHR8\":0,\"CHR9\":0}}",
+						"isSummary": false,
+						"previewData": {
+							"filter": null
+						},
+						"isSql": false
+					}
+				},
+				"source": [
+					"tablaUnificado_1 = spark.read.jdbc(url=connection_string, table='Unificado')"
+				],
+				"execution_count": 23
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"diagram": {
+						"activateDiagramType": 1,
+						"chartConfig": {
+							"category": "bar",
+							"keys": [
+								"CHROM"
+							],
+							"values": [
+								"FECHA_COPIA"
+							],
+							"yLabel": "FECHA_COPIA",
+							"xLabel": "CHROM",
+							"aggregation": "SUM",
+							"aggByBackend": false
+						},
+						"aggData": "{\"FECHA_COPIA\":{\"CHR1\":0,\"CHR10\":0,\"CHR11\":0,\"CHR12\":0,\"CHR13\":0,\"CHR14\":0,\"CHR15\":0,\"CHR16\":0,\"CHR17\":0,\"CHR18\":0,\"CHR19\":0,\"CHR2\":0,\"CHR20\":0,\"CHR3\":0,\"CHR4\":0,\"CHR5\":0,\"CHR6\":0,\"CHR7\":0,\"CHR8\":0,\"CHR9\":0}}",
+						"isSummary": false,
+						"previewData": {
+							"filter": null
+						},
+						"isSql": false
+					}
+				},
+				"source": [
+					"display(tablaUnificado_1)"
+				],
+				"execution_count": 24
 			}
 		]
 	}
