@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "pruebasanalytics"
+		},
+		"lake_gen2cluster_accountKey": {
+			"value": ""
+		},
+		"pruebasanalytics-WorkspaceDefaultSqlServer_connectionString": {
+			"value": ""
+		},
+		"sql_SourceDB_connectionString": {
+			"value": ""
+		},
+		"lake_gen2cluster_properties_typeProperties_url": {
+			"value": "https://gen2cluster.dfs.core.windows.net/"
+		},
+		"pruebasanalytics-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://gen2cluster.dfs.core.windows.net"
+		}
+	}
+}
