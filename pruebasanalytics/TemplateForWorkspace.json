@@ -7,14 +7,6 @@
 			"metadata": "Workspace name",
 			"defaultValue": "pruebasanalytics"
 		},
-		"lake_gen2cluster_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'lake_gen2cluster'"
-		},
-		"lake_gen2cluster_servPpal_servicePrincipalCredential": {
-			"type": "secureString",
-			"metadata": "Secure string for 'servicePrincipalCredential' of 'lake_gen2cluster_servPpal'"
-		},
 		"pruebasanalytics-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'pruebasanalytics-WorkspaceDefaultSqlServer'"
@@ -26,22 +18,6 @@
 		"AKV_1_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://chargecard764Id.vault.azure.net/"
-		},
-		"lake_gen2cluster_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://gen2cluster.dfs.core.windows.net/"
-		},
-		"lake_gen2cluster_servPpal_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://gen2cluster.dfs.core.windows.net"
-		},
-		"lake_gen2cluster_servPpal_properties_typeProperties_tenant": {
-			"type": "string",
-			"defaultValue": "ca1d08b0-9543-4bd9-8718-42becddc7786"
-		},
-		"lake_gen2cluster_servPpal_properties_typeProperties_servicePrincipalId": {
-			"type": "string",
-			"defaultValue": "92edc83e-82bc-46a3-ab79-2fc09b752cd0"
 		},
 		"pruebasanalytics-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
@@ -64,55 +40,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/lake_gen2cluster')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('lake_gen2cluster_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('lake_gen2cluster_accountKey')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/lake_gen2cluster_servPpal')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('lake_gen2cluster_servPpal_properties_typeProperties_url')]",
-					"tenant": "[parameters('lake_gen2cluster_servPpal_properties_typeProperties_tenant')]",
-					"servicePrincipalId": "[parameters('lake_gen2cluster_servPpal_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalCredentialType": "ServicePrincipalKey",
-					"servicePrincipalCredential": {
-						"type": "SecureString",
-						"value": "[parameters('lake_gen2cluster_servPpal_servicePrincipalCredential')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/pruebasanalytics-WorkspaceDefaultSqlServer')]",
@@ -216,8 +143,8 @@
 						"language": "sql"
 					},
 					"currentConnection": {
-						"poolName": "Built-in",
-						"databaseName": "master"
+						"databaseName": "master",
+						"poolName": "Built-in"
 					},
 					"resultLimit": 5000
 				},
@@ -6234,6 +6161,71 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 2')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "26769195-b793-4c5b-8f56-ad988668be9a"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://syn-analytics@gen2cluster.dfs.core.windows.net/saved_dataframe_delta/part-00000-1cbc2ddf-88cc-41bf-b6e6-8ee7da4e4426-c000.snappy.parquet', format='parquet')\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/get_creds Key Vault')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -6420,16 +6412,12 @@
 						"sparkVersion": "2.4",
 						"nodeCount": 3,
 						"cores": 4,
-						"memory": 28,
-						"extraHeader": {},
-						"automaticScaleJobs": false
-					},
-					"sessionKeepAliveTimeout": 30
+						"memory": 28
+					}
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"%%pyspark\n",
 							"# retrieve connectionstring from TokenLibrary\n",
@@ -6449,7 +6437,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"print(connection_string_Key)"
 						],
@@ -6458,7 +6445,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"print(connection_string_SP)"
 						],
