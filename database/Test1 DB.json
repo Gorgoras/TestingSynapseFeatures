@@ -1,0 +1,22 @@
+{
+	"name": "Test1 DB",
+	"properties": {
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"Properties": {
+			"IsSyMSCDMDatabase": true
+		},
+		"Name": "Test1 DB",
+		"EntityType": "DATABASE",
+		"Source": {
+			"Provider": "ADLS",
+			"Location": "abfss://syn-analytics@gen2cluster.dfs.core.windows.net/Test1 DB",
+			"Properties": {
+				"FormatType": "csv",
+				"LinkedServiceName": "pruebasanalytics-WorkspaceDefaultStorage"
+			}
+		}
+	},
+	"type": "DATABASE"
+}
