@@ -299,11 +299,11 @@
 					"path": "abfss://raw-tests@gen2cluster.dfs.core.windows.net/flights",
 					"delimiter": ",",
 					"multiLine": "false",
-					"firstRowAsHeader": "false",
+					"firstRowAsHeader": "true",
 					"serialization.format": "1",
 					"escape": "\\",
 					"FormatTypeSetToDatabaseDefault": false,
-					"header": "false"
+					"header": "true"
 				}
 			},
 			"Source": {
