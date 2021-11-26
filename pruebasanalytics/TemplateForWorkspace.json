@@ -6568,8 +6568,8 @@
 									"Properties": {
 										"path": "abfss://raw-tests@gen2cluster.dfs.core.windows.net/events",
 										"delimiter": ",",
-										"multiLine": "false",
 										"firstRowAsHeader": "true",
+										"multiLine": "false",
 										"serialization.format": "1",
 										"escape": "\\",
 										"FormatTypeSetToDatabaseDefault": false,
@@ -6891,8 +6891,8 @@
 									"Properties": {
 										"path": "abfss://raw-tests@gen2cluster.dfs.core.windows.net/flights",
 										"delimiter": ",",
-										"multiLine": "false",
 										"firstRowAsHeader": "true",
+										"multiLine": "false",
 										"serialization.format": "1",
 										"escape": "\\",
 										"FormatTypeSetToDatabaseDefault": false,
@@ -7047,6 +7047,20 @@
 						}
 					}
 				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PowerBIWorkspace_MZ')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "PowerBIWorkspace",
+				"typeProperties": {
+					"workspaceID": "574da5c7-4dc0-4180-b7ce-9d0249c27b3e",
+					"tenantID": "ca1d08b0-9543-4bd9-8718-42becddc7786"
+				}
 			},
 			"dependsOn": []
 		}
