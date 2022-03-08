@@ -9,7 +9,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"variableName": "var1",
-					"value": "@float(988)"
+					"value": {
+						"value": "988",
+						"type": "Expression"
+					}
 				}
 			}
 		],
