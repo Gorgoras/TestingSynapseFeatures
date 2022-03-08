@@ -146,7 +146,7 @@
 						"typeProperties": {
 							"variableName": "var1",
 							"value": {
-								"value": "@float(988)",
+								"value": "988",
 								"type": "Expression"
 							}
 						}
