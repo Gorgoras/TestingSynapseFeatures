@@ -73,7 +73,7 @@
 									"typeProperties": {
 										"variableName": "untilreference",
 										"value": {
-											"value": "@add(float(variables('startingValue')), float(variables('chunkSize')))",
+											"value": "@string(add(float(variables('startingValue')), float(variables('chunkSize'))))",
 											"type": "Expression"
 										}
 									}
@@ -93,7 +93,7 @@
 									"typeProperties": {
 										"variableName": "startingValue",
 										"value": {
-											"value": "@variables('untilreference')",
+											"value": "@string(variables('untilreference'))",
 											"type": "Expression"
 										}
 									}
