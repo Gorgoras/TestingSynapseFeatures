@@ -457,6 +457,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "select top 100 * \nfrom OPENROWSET('CosmosDB', \n                'Account=codsworth;Database=TestingFreeTier;Key=f3hZu9XVZLOFSc30pESXTdS3OGD7jCyBncDfL2BQJxTl7uWF2i5ElvMxqh4GCWOLYJK4OHQ1sN4rZmZ8WWUdkw==', \n                FreeContainer1) as rs\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Load data into delta')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
