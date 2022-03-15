@@ -5,6 +5,9 @@
 		"workspaceName": {
 			"value": "pruebasanalytics"
 		},
+		"CosmosDb_Sql_connectionString": {
+			"value": ""
+		},
 		"pruebasanalytics-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
