@@ -6806,6 +6806,495 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Test MLFlow')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkingPool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "f3b68f85-a943-47c5-ac85-006178d8c12a"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/fc2b6f69-07e8-4361-a14c-926b7e50d69e/resourceGroups/Synapse-Analytics/providers/Microsoft.Synapse/workspaces/pruebasanalytics/bigDataPools/SparkingPool",
+						"name": "SparkingPool",
+						"type": "Spark",
+						"endpoint": "https://pruebasanalytics.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkingPool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"import mlflow"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import numpy as np \r\n",
+							"import pandas as pd # procesamiento de datos\r\n",
+							"import mlflow\r\n",
+							"import mlflow.sklearn # como voy a entrenar un modelo de sklearn, debo importar este módulo de mlflow\r\n",
+							"from sklearn import datasets # para importar el dataset iris directamente desde los dataset que provee sklearn"
+						],
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"iris_X, iris_y = datasets.load_iris(return_X_y=True)\r\n",
+							"np.unique(iris_y)\r\n",
+							"np.random.seed(0)\r\n",
+							"indices = np.random.permutation(len(iris_X))\r\n",
+							"iris_X_train = iris_X[indices[:-10]]\r\n",
+							"iris_y_train = iris_y[indices[:-10]]\r\n",
+							"iris_X_test = iris_X[indices[-10:]]\r\n",
+							"iris_y_test = iris_y[indices[-10:]]"
+						],
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Create and fit a nearest-neighbor classifier\r\n",
+							"from sklearn.neighbors import KNeighborsClassifier   \r\n",
+							"\r\n",
+							"n = 5\r\n",
+							"\r\n",
+							"#mlflow.log_param('n_neighbors', n) # Guardar parametro \"n\" correspondiente al hyperparametro n_neighbors de los KNN\r\n",
+							"\r\n",
+							"knc = KNeighborsClassifier(n_neighbors = n)\r\n",
+							"knc.fit(iris_X_train, iris_y_train)\r\n",
+							"\r\n",
+							"\r\n",
+							"knc.predict(iris_X_test)\r\n",
+							"score = knc.score(iris_X_test, iris_y_test)\r\n",
+							"\r\n",
+							"\r\n",
+							"print('Metrica: {}'.format(score))\r\n",
+							"print('Predicción: {}'.format(knc.predict(iris_X_test)))\r\n",
+							"print('Valor Real: {}'.format(iris_y_test))"
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"mlflow.start_run()\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 9
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Create and fit a nearest-neighbor classifier\r\n",
+							"from sklearn.ensemble import RandomForestClassifier\r\n",
+							"\r\n",
+							"n_arboles = 50\r\n",
+							"profundidad = 10\r\n",
+							"\r\n",
+							"rf = RandomForestClassifier(n_estimators = n_arboles, max_depth = profundidad)\r\n",
+							"rf.fit(iris_X_train,iris_y_train)\r\n",
+							"\r\n",
+							"mlflow.log_param('_tipo_algoritmo','RandomForestClassifier')\r\n",
+							"mlflow.log_params( rf.get_params())\r\n",
+							"\r\n",
+							"score = rf.score(iris_X_test, iris_y_test)\r\n",
+							"\r\n",
+							"mlflow.log_metric('score_iris', score)\r\n",
+							"mlflow.sklearn.log_model(rf, 'model')\r\n",
+							"\r\n",
+							"print('Metrica: {}'.format(score))\r\n",
+							"print('Predicción: {}'.format(rf.predict(iris_X_test)))\r\n",
+							"print('Valor Real: {}'.format(iris_y_test))"
+						],
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"mlflow.end_run()\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"with mlflow.start_run():\r\n",
+							"    # Create and fit a nearest-neighbor classifier\r\n",
+							"    from sklearn.neighbors import KNeighborsClassifier   \r\n",
+							"    \r\n",
+							"    n = 10\r\n",
+							"    \r\n",
+							"    #mlflow.log_param('n_neighbors', n) # Guardar parametro \"n\" correspondiente al hyperparametro n_neighbors de los KNN\r\n",
+							"    \r\n",
+							"    knc = KNeighborsClassifier(n_neighbors = n)\r\n",
+							"    knc.fit(iris_X_train, iris_y_train)\r\n",
+							"    \r\n",
+							"    mlflow.log_param('_tipo_algoritmo','KNeighborsClassifier')\r\n",
+							"    mlflow.log_params(knc.get_params())\r\n",
+							"    \r\n",
+							"    knc.predict(iris_X_test)\r\n",
+							"    score = knc.score(iris_X_test, iris_y_test)\r\n",
+							"    \r\n",
+							"    mlflow.log_metric('score_iris', score) # Guardar la métrica score obtenido de knn\r\n",
+							"    mlflow.sklearn.log_model(knc, 'model') # Guardar la métrica score obtenido de knn\r\n",
+							"    \r\n",
+							"    print('Metrica: {}'.format(score))\r\n",
+							"    print('Predicción: {}'.format(knc.predict(iris_X_test)))\r\n",
+							"    print('Valor Real: {}'.format(iris_y_test))"
+						],
+						"outputs": [],
+						"execution_count": 12
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"mlflow.tracking.MlflowClient().list_experiments()"
+						],
+						"outputs": [],
+						"execution_count": 13
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"mlflow.search_runs().head(5)\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 14
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"mlflow.search_runs(experiment_ids='0', filter_string= 'metrics.score_iris > 0.9').head()\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 15
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"type(mlflow.search_runs())\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 16
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"model_uri = mlflow.search_runs()\\\r\n",
+							"        [mlflow.search_runs()['run_id'] == '6fb829a825354955a1bdbf73bebf5bb3']\\\r\n",
+							"        .artifact_uri.item()\r\n",
+							"model_uri"
+						],
+						"outputs": [],
+						"execution_count": 18
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"model = mlflow.sklearn.load_model(model_uri+'/model')"
+						],
+						"outputs": [],
+						"execution_count": 19
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"type(model)"
+						],
+						"outputs": [],
+						"execution_count": 20
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"model= mlflow.sklearn.load_model(model_uri+'/model')\r\n",
+							"print('Predicción: {}'.format(model.predict(iris_X_test)))\r\n",
+							"print('Valor Real: {}'.format(iris_y_test))"
+						],
+						"outputs": [],
+						"execution_count": 21
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df = pd.DataFrame([model.predict(iris_X_test),iris_y_test]).transpose().rename({0:\"predicho\", 1:\"valor_real\"}, axis = 1)\r\n",
+							"iris_class = {0:'Iris-Setosa',1:'Iris-Versicolour',2:'Iris-Virginica'}\r\n",
+							"df.replace(iris_class, inplace = True)\r\n",
+							"df['son_iguales'] = df.apply(lambda x: True if x.predicho == x.valor_real else False, axis = 1)"
+						],
+						"outputs": [],
+						"execution_count": 22
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df"
+						],
+						"outputs": [],
+						"execution_count": 23
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
 		}
 	]
 }
