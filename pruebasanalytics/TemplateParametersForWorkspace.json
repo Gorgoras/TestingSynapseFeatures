@@ -9,7 +9,7 @@
 			"value": ""
 		},
 		"pruebasanalytics-WorkspaceDefaultSqlServer_connectionString": {
-			"value": ""
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:pruebasanalytics.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"sql_SourceDB_connectionString": {
 			"value": ""
